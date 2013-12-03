@@ -1,0 +1,24 @@
+#!/bin/bash
+
+RAILS_ROOT=/var/www/lrweb
+VBIN=$RAILS_ROOT/vendor/bin
+export RAILS_ENV=production
+
+git checkout -f
+
+cd $RAILS_ROOT
+
+if [ -f  "/usr/local/rvm/scripts/rvm" ]; then
+  . /usr/local/rvm/scripts/rvm
+  rvm use `cat .ruby-version`
+fi
+
+bundle check || bundle install --binstubs $VBIN --local --deployment --without development test
+
+$VBIN/rake db:migrate
+
+if [ ! -d $RAILS_ROOT/tmp ]; then
+  install -d $RAILS_ROOT/tmp -o lightrules -g lightrules -m 775
+fi
+
+touch $RAILS_ROOT/tmp/restart.txt
