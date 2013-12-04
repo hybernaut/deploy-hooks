@@ -31,7 +31,9 @@ if [ ! -d $RAILS_ROOT/tmp ]; then
   install -d $RAILS_ROOT/tmp -o lightrules -g lightrules -m 775
 fi
 
-# NOTE jammit will fail unless public/assets is owned by group lightrules and is group writable.
-export rvmsudo_secure_path=1
+# NOTE jammit will fail if this user can't write to public/assets.
+if [ ! -d $RAILS_ROOT/public/assets ]; then
+  install -d $RAILS_ROOT/public/assets -o lightrules -g lightrules -m 775
+fi
 $VBIN/jammit
 touch $RAILS_ROOT/tmp/restart.txt
