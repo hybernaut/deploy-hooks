@@ -4,14 +4,14 @@
 while read oldrev newrev refname
 do
     branch=$(git describe --contains --all $refname)
-    echo "refname: $refname, branch: $branch"
+    echo "pushing branch $branch"
 done
 
 RAILS_ROOT=/var/www/lrweb
 VBIN=$RAILS_ROOT/vendor/bin
 export RAILS_ENV=production
 
-git checkout -f $branch
+git checkout -q -f $branch
 
 revn=$(git rev-parse --short $branch)
 echo $branch-$revn > $RAILS_ROOT/REVISION
@@ -25,15 +25,13 @@ fi
 
 bundle check || bundle install --binstubs $VBIN --local --deployment --without development test
 
+echo "rake db:migrate"
 $VBIN/rake db:migrate
 
-if [ ! -d $RAILS_ROOT/tmp ]; then
-  install -d $RAILS_ROOT/tmp -o lightrules -g lightrules -m 775
-fi
-
-# NOTE jammit will fail if this user can't write to public/assets.
-if [ ! -d $RAILS_ROOT/public/assets ]; then
-  install -d $RAILS_ROOT/public/assets -o lightrules -g lightrules -m 775
-fi
+# NOTE jammit will fail if this is not writable by current user
+mkdir -p public/assets
+echo "processing assets with jammit"
 $VBIN/jammit
+
+mkdir -p tmp
 touch $RAILS_ROOT/tmp/restart.txt
