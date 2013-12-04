@@ -7,17 +7,19 @@ do
     echo "refname: $refname, branch: $branch"
 done
 
-
 RAILS_ROOT=/var/www/lrweb
 VBIN=$RAILS_ROOT/vendor/bin
 export RAILS_ENV=production
 
 git checkout -f $branch
 
+revn=$(git rev-parse --short $branch)
+echo $branch-$revn > $RAILS_ROOT/REVISION
+
 cd $RAILS_ROOT
 
 if [ -f  "/usr/local/rvm/scripts/rvm" ]; then
-  . /usr/local/rvm/scripts/rvm
+  source /usr/local/rvm/scripts/rvm
   rvm use `cat .ruby-version`
 fi
 
@@ -29,4 +31,7 @@ if [ ! -d $RAILS_ROOT/tmp ]; then
   install -d $RAILS_ROOT/tmp -o lightrules -g lightrules -m 775
 fi
 
+# NOTE jammit will fail unless public/assets is owned by group lightrules and is group writable.
+export rvmsudo_secure_path=1
+$VBIN/jammit
 touch $RAILS_ROOT/tmp/restart.txt
