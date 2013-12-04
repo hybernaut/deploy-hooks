@@ -20,7 +20,7 @@ cd $RAILS_ROOT
 
 if [ -f  "/usr/local/rvm/scripts/rvm" ]; then
   source /usr/local/rvm/scripts/rvm
-  rvm use `cat .ruby-version`
+  rvm use `cat .ruby-version` --create
 fi
 
 bundle check || bundle install --binstubs $VBIN --local --deployment --without development test
