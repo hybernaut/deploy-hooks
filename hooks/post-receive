@@ -1,10 +1,18 @@
 #!/bin/bash
 
+# we get revision info on stdin
+while read oldrev newrev refname
+do
+    branch=$(git describe --contains --all $refname)
+    echo "refname: $refname, branch: $branch"
+done
+
+
 RAILS_ROOT=/var/www/lrweb
 VBIN=$RAILS_ROOT/vendor/bin
 export RAILS_ENV=production
 
-git checkout -f
+git checkout -f $branch
 
 cd $RAILS_ROOT
 
