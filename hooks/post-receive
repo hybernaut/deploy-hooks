@@ -1,5 +1,7 @@
 #!/bin/bash
 
+umask 0002
+
 # we get revision info on stdin
 while read oldrev newrev refname
 do
@@ -35,3 +37,10 @@ $VBIN/jammit
 
 mkdir -p tmp
 touch $RAILS_ROOT/tmp/restart.txt
+
+# ensure the log directory is a symlink to /data/lightrules
+
+if [ -d $RAILS_ROOT/log ]; then
+  mv log log-
+  ln -s /data/lightrules log
+fi
