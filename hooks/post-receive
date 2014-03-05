@@ -35,6 +35,9 @@ mkdir -p public/assets
 echo "processing assets with jammit"
 $VBIN/jammit
 
+echo "writing crontab file"
+$VBIN/whenever -w
+
 mkdir -p tmp
 touch $RAILS_ROOT/tmp/restart.txt
 
